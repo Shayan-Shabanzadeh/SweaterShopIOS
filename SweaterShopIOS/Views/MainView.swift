@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     init() {
+        self.current_user_binding = Binding<User?>(get: { current_user }, set: { current_user = $0! })
         fetchProductData()
     }
     
@@ -18,6 +19,7 @@ struct MainView: View {
     @State private var showProfile = false
     @State private var showSettings = false
     @State private var showRoot = false
+    var current_user_binding: Binding<User?>
     var columns = [GridItem(.adaptive(minimum: 160), spacing: 20)]
     
     var body: some View {
@@ -83,7 +85,7 @@ struct MainView: View {
             }.hidden()
         
         NavigationLink(
-            destination: ProfileView(),
+            destination: ProfileView(user: current_user_binding),
             isActive: $showProfile){
                 EmptyView()
             }.hidden()
@@ -97,6 +99,6 @@ struct MainView: View {
 
 struct MainScreen_Previews: PreviewProvider {
     static var previews: some View {
-        MainView()
+        return MainView()
     }
 }
