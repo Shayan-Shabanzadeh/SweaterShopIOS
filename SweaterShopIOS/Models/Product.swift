@@ -1,7 +1,7 @@
 import SwiftUI
 import Foundation
 
-struct Product:Decodable {
+struct Product:Decodable , Hashable {
     var id : Int
     var image: String
     var price: Int

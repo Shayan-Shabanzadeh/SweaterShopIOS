@@ -11,6 +11,8 @@ import SwiftUI
 struct ProductCard: View {
     @EnvironmentObject var cartManager: CartManager
     @State private var image: Image?
+    @Binding var selectedProduct: Product?
+    
     var product: Product
     
     var body: some View {
@@ -70,19 +72,43 @@ struct ProductCard: View {
                 }
             }
         }
+        .background(
+            NavigationLink(
+                destination: ProductDetailView(product: product).environmentObject(cartManager),
+                isActive: Binding(
+                    get: { selectedProduct == product },
+                    set: { newValue in
+                        if !newValue {
+                            selectedProduct = nil
+                        }
+                    }
+                ),
+                label: {
+                    EmptyView()
+                }
+            )
+            .hidden()
+        )
     }
 }
+
+
 
 
 
     
-struct ProductCard_Preview : PreviewProvider{
-    static var previews: some View {
-        if productList.isEmpty{
-            Text("No product")
-        }else{
-            ProductCard(product: productList[0])
-                .environmentObject(CartManager() )
-        }
-    }
-}
+//struct ProductCard_Preview: PreviewProvider {
+//    static var previews: some View {
+//        Group {
+//            if productList.isEmpty {
+//                Text("No product")
+//            } else {
+//                ProductCard(product: productList[0], selectedProduct: .constant(nil))
+//                    .environmentObject(CartManager())
+//            }
+//        }
+//        .previewLayout(.fixed(width: 200, height: 300)) // Adjust preview size as needed
+//    }
+//}
+
+

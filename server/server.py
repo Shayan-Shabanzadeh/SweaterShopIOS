@@ -29,6 +29,20 @@ class Product(db.Model):
         self.type = type
 
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    first_name = db.Column(db.String(100))
+    last_name = db.Column(db.String(100))
+
+    def __init__(self, email, password, first_name, last_name):
+        self.email = email
+        self.password = password
+        self.first_name = first_name
+        self.last_name = last_name
+
+
 @app.route("/products", methods=["GET"])
 def get_products():
     products = Product.query.all()
@@ -61,7 +75,49 @@ def get_product_image():
         return jsonify({"error": "Product not found."})
 
 
+@app.route("/signup", methods=["POST"])
+def signup():
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+    first_name = data.get("first_name")
+    last_name = data.get("last_name")
+
+    if not email or not password:
+        return jsonify({"error": "Email and password are required."}), 400
+
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        return jsonify({"error": "User with this email already exists."}), 400
+
+    new_user = User(email=email, password=password, first_name=first_name, last_name=last_name)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({"message": "User created successfully."}), 201
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return jsonify({"error": "Email and password are required."}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user or user.password != password:
+        return jsonify({"error": "Invalid email or password."}), 401
+
+    return jsonify({"message": "Login successful."}), 200
+
+
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    app.run(port=9000)
+
     # with app.app_context():
     #     db.create_all()
     #
@@ -86,5 +142,3 @@ if __name__ == "__main__":
     #
     #     db.session.bulk_save_objects(productList)
     #     db.session.commit()
-
-    app.run(port=9000)

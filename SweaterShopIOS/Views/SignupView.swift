@@ -54,10 +54,10 @@ struct SignupView: View {
                         Spacer().frame(height: 10)
 
                         
-                        PasswordField(password: password, showPassword: false, text : "Password")
+                        PasswordField(password: $password, showPassword: false, text : "Password")
                         Spacer().frame(height: 9)
 
-                        PasswordField(password: password , showPassword: false , text: "Confirm password")
+                        PasswordField(password: $conformPassword , showPassword: false , text: "Confirm password")
                         Spacer().frame(height: 10)
                     }
                     
@@ -132,6 +132,9 @@ struct SocalSignupButton: View {
         .shadow(color: Color.black.opacity(0.08), radius: 60, x: /*@START_MENU_TOKEN@*/0.0/*@END_MENU_TOKEN@*/, y: 16)
     }
 }
+
+
+
 
 struct SignupView_Previews: PreviewProvider {
     static var previews: some View {
