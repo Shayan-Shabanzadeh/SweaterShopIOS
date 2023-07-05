@@ -10,9 +10,6 @@ Welcome to the Sweater Shop iOS App! This is a mobile application built using Sw
 - Profile management: view user profile details and edit profile information.
 - Authentication: sign up and log in to access personalized features.
 
-## Screenshots
-
-[Add screenshots or images of your app here to showcase its UI and features]
 
 ## Prerequisites
 
