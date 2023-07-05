@@ -6,6 +6,7 @@ Welcome to the Sweater Shop iOS App! This is a mobile application built using Sw
 
 - View a collection of sweaters with details such as name, image, price, and description.
 - Add sweaters to the cart and proceed to checkout.
+- Pay with apple pay for visa and mastercard
 - Profile management: view user profile details and edit profile information.
 - Authentication: sign up and log in to access personalized features.
 
