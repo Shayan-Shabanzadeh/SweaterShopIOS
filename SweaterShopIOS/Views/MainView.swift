@@ -11,13 +11,13 @@ struct MainView: View {
     init() {
         fetchProductData()
     }
-    @Environment(\.presentationMode) var presentationMode
-
+    
     @StateObject var cartManager = CartManager()
     @State private var selectedProduct: Product? = nil
-    
     @State private var showMenu = false
-    
+    @State private var showProfile = false
+    @State private var showSettings = false
+    @State private var showRoot = false
     var columns = [GridItem(.adaptive(minimum: 160), spacing: 20)]
     
     var body: some View {
@@ -39,19 +39,20 @@ struct MainView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Menu {
                         Button(action: {
-                            // Handle profile action
+                            showProfile = true
                         }) {
                             Label("Profile", systemImage: "person")
                         }
                         
                         Button(action: {
-                            // Handle settings action
+                            showSettings = true
                         }) {
                             Label("Settings", systemImage: "gearshape")
                         }
                         
                         Button(action: {
-                            presentationMode.wrappedValue.dismiss()  // Dismiss the current view (logout)
+                            // Handle logout action
+                            showRoot = true
                         }) {
                             Label("Logout", systemImage: "person.crop.circle.badge.xmark")
                         }
@@ -69,9 +70,28 @@ struct MainView: View {
                 }
             }
         }
+        NavigationLink(
+            destination: ContentView().navigationBarHidden(true),
+            isActive: $showRoot){
+                EmptyView()
+            }.hidden()
+        
+        NavigationLink(
+            destination: SettingsView(),
+            isActive: $showSettings){
+                EmptyView()
+            }.hidden()
+        
+        NavigationLink(
+            destination: ProfileView(),
+            isActive: $showProfile){
+                EmptyView()
+            }.hidden()
         .navigationViewStyle(StackNavigationViewStyle())
     }
 }
+
+
 
 
 

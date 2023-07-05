@@ -27,6 +27,8 @@
 		8839A9732A547ACD00913030 /* PasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8839A9722A547ACD00913030 /* PasswordField.swift */; };
 		8839A9752A548E0200913030 /* LoadingComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8839A9742A548E0100913030 /* LoadingComponent.swift */; };
 		884F42052A5546C700DA7463 /* ProductDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884F42042A5546C700DA7463 /* ProductDetailView.swift */; };
+		884F42092A55CE4C00DA7463 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884F42082A55CE4C00DA7463 /* ProfileView.swift */; };
+		884F420B2A55CE6700DA7463 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884F420A2A55CE6700DA7463 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +54,8 @@
 		8839A9722A547ACD00913030 /* PasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordField.swift; sourceTree = "<group>"; };
 		8839A9742A548E0100913030 /* LoadingComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingComponent.swift; sourceTree = "<group>"; };
 		884F42042A5546C700DA7463 /* ProductDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailView.swift; sourceTree = "<group>"; };
+		884F42082A55CE4C00DA7463 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		884F420A2A55CE6700DA7463 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +141,8 @@
 				8839A96A2A5462EA00913030 /* SignInView.swift */,
 				8839A96C2A5462FD00913030 /* SignupView.swift */,
 				884F42042A5546C700DA7463 /* ProductDetailView.swift */,
+				884F42082A55CE4C00DA7463 /* ProfileView.swift */,
+				884F420A2A55CE6700DA7463 /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -216,6 +222,7 @@
 				8839A9622A5408F200913030 /* ProductRow.swift in Sources */,
 				8839A9752A548E0200913030 /* LoadingComponent.swift in Sources */,
 				8839A9692A54621F00913030 /* MainView.swift in Sources */,
+				884F420B2A55CE6700DA7463 /* SettingsView.swift in Sources */,
 				8839A96F2A546AA400913030 /* PrimaryButton.swift in Sources */,
 				8839A9732A547ACD00913030 /* PasswordField.swift in Sources */,
 				8839A95E2A5405E500913030 /* CartView.swift in Sources */,
@@ -227,6 +234,7 @@
 				8839A9562A54007E00913030 /* Product.swift in Sources */,
 				8839A9592A54012000913030 /* ProductCard.swift in Sources */,
 				8839A96D2A5462FD00913030 /* SignupView.swift in Sources */,
+				884F42092A55CE4C00DA7463 /* ProfileView.swift in Sources */,
 				8839A95C2A54048100913030 /* CartButton.swift in Sources */,
 				884F42052A5546C700DA7463 /* ProductDetailView.swift in Sources */,
 			);
