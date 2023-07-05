@@ -36,7 +36,7 @@ struct PasswordField: View {
                     .frame(maxWidth: .infinity)
                     .background(Color.white)
                     .cornerRadius(50.0)
-                    .shadow(color: Color.black.opacity(0.08), radius: 10, x: 0.0, y: 16)
+                    .shadow(color: Color.black.opacity(0.08), radius: 60, x: 0.0, y: 16)
             }
             
             Button(action: {

@@ -7,6 +7,29 @@
 
 import SwiftUI
 
+struct SignupResult: Identifiable {
+    var id = UUID()
+    var result: Result<String, Error>
+    
+    var isSuccess: Bool {
+        if case .success = result {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    var error: String? {
+        if case .failure(let error) = result {
+            return error.localizedDescription
+        } else {
+            return nil
+        }
+    }
+}
+
+
+
 struct SignupView: View {
     @State private var email: String = ""
     @State private var firstName: String = ""
@@ -15,70 +38,90 @@ struct SignupView: View {
     @State private var conformPassword: String = ""
     @State private var showPassword = false
     @State private var isLoading = false
+    @State private var navigateToMainView = false
+    @State private var signupResult: SignupResult? = nil
+    @State private var isAlertPresented = false
+    @State private var alertMessage = ""
+    
     var body: some View {
-        ZStack {
-            VStack {
-                Spacer()
-                
+        ScrollView {
+            ZStack {
                 VStack {
-                    Text("Sign up")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .padding(.bottom, 30)
+                    Spacer()
                     
-                    VStack{
-                        TextField("First name", text: $firstName)
-                            .font(.title3)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.white)
-                            .cornerRadius(50.0)
-                            .shadow(color: Color.black.opacity(0.08), radius: 60, x: /*@START_MENU_TOKEN@*/0.0/*@END_MENU_TOKEN@*/, y: 16)
+                    VStack {
+                        Text("Sign up")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .padding(.bottom, 30)
                         
-                        TextField("Last name", text: $lastName)
-                            .font(.title3)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.white)
-                            .cornerRadius(50.0)
-                            .shadow(color: Color.black.opacity(0.08), radius: 60, x: /*@START_MENU_TOKEN@*/0.0/*@END_MENU_TOKEN@*/, y: 16)
+                        VStack{
+                            TextField("First name", text: $firstName)
+                                .font(.title3)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.white)
+                                .cornerRadius(50.0)
+                                .shadow(color: Color.black.opacity(0.08), radius: 60, x: /*@START_MENU_TOKEN@*/0.0/*@END_MENU_TOKEN@*/, y: 16)
+                            
+                            TextField("Last name", text: $lastName)
+                                .font(.title3)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.white)
+                                .cornerRadius(50.0)
+                                .shadow(color: Color.black.opacity(0.08), radius: 60, x: /*@START_MENU_TOKEN@*/0.0/*@END_MENU_TOKEN@*/, y: 16)
+                            
+                            TextField("Email address", text: $email)
+                                .font(.title3)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.white)
+                                .cornerRadius(50.0)
+                                .shadow(color: Color.black.opacity(0.08), radius: 60, x: /*@START_MENU_TOKEN@*/0.0/*@END_MENU_TOKEN@*/, y: 16)
+                            
+                            Spacer().frame(height: 10)
+                            
+                            
+                            PasswordField(password: $password, showPassword: false, text : "Password")
+                            Spacer().frame(height: 9)
+                            
+                            PasswordField(password: $conformPassword , showPassword: false , text: "Confirm password")
+                            Spacer().frame(height: 10)
+                        }
                         
-                        TextField("Email address", text: $email)
-                            .font(.title3)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.white)
-                            .cornerRadius(50.0)
-                            .shadow(color: Color.black.opacity(0.08), radius: 60, x: /*@START_MENU_TOKEN@*/0.0/*@END_MENU_TOKEN@*/, y: 16)
                         
-                        Spacer().frame(height: 10)
-
                         
-                        PasswordField(password: $password, showPassword: false, text : "Password")
-                        Spacer().frame(height: 9)
-
-                        PasswordField(password: $conformPassword , showPassword: false , text: "Confirm password")
-                        Spacer().frame(height: 10)
+                        
+                        //                    PrimaryButton(title: "Sign up", destination: MainView())
+                        if !isLoading {
+                            PrimaryButton(title: "Sign up").onTapGesture {
+                                performSignup()
+                            }
+                        } else {
+                            LoadingComponent()
+                        }
+                        
+                        NavigationLink(destination: MainView().navigationBarHidden(true), isActive: $navigateToMainView) {
+                            EmptyView()
+                        }
+                        .hidden()
+                    }
+                    .alert(isPresented: Binding(
+                        get: { signupResult?.error != nil },
+                        set: { _ in signupResult = nil }
+                    )) {
+                        Alert(
+                            title: Text("Error"),
+                            message: Text(signupResult?.error ?? ""),
+                            dismissButton: .default(Text("OK"))
+                        )
                     }
                     
-                    
 
-                    
-//                    PrimaryButton(title: "Sign up", destination: MainView())
-
-                    
-                    NavigationLink(
-                        destination: MainView() .navigationBarHidden(true),
-                        label: {
-                            if !isLoading{
-                                PrimaryButton(title: "Login")
-                            }else{
-                                LoadingComponent()
-                            }
-                        })
                     
                     Spacer().frame(height: 16)
-
+                    
                     
                     Text("or login with Google & Apple")
                         .foregroundColor(Color.black.opacity(0.4))
@@ -96,20 +139,42 @@ struct SignupView: View {
                     
                     Spacer()
                     
+                    
                 }
-                
-                Spacer()
-                Divider()
-                Spacer()
-                Text("You are completely safe.")
-                Text("Read our Terms & Conditions.")
-                    .foregroundColor(Color("PrimaryColor"))
-                Spacer()
+
                 
             }
             .padding()
         }
     }
+    
+    func performSignup() {
+         // Validate input
+         guard !email.isEmpty, !firstName.isEmpty, !lastName.isEmpty, !password.isEmpty, password == conformPassword else {
+             signupResult = SignupResult(result: .failure(AuthenticationError.invalidData))
+             return
+         }
+
+         // Create a user object
+         let user = User(firstName: firstName, lastName: lastName, email: email, password: password)
+
+         // Call the sendSignup function
+         sendSignup(user: user) { result in
+             DispatchQueue.main.async {
+                 // Update the signup result and loading state
+                 signupResult = SignupResult(result: result)
+                 isLoading = false
+
+                 switch result {
+                 case .success:
+                     isAlertPresented = false
+                 case .failure(let error):
+                     isAlertPresented = true
+                     alertMessage = error.localizedDescription
+                 }
+             }
+         }
+     }
 }
 
 struct SocalSignupButton: View {

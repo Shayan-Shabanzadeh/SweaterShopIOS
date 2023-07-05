@@ -15,6 +15,9 @@ struct User: Identifiable {
     var password: String
 }
 
+var current_user : User? = nil
+
+
 enum AuthenticationError: Error {
     case invalidResponse
     case requestFailed
@@ -109,24 +112,4 @@ func sendSignup(user: User, completion: @escaping (Result<String, Error>) -> Voi
     }
 }
 
-//// Example usage:
-//let user = User(firstName: "John", lastName: "Doe", email: "john@example.com", password: "password")
-//
-//sendSignup(user: user) { result in
-//    switch result {
-//    case .success(let message):
-//        print(message)
-//    case .failure(let error):
-//        print("Signup failed: \(error.localizedDescription)")
-//    }
-//}
-//
-//sendLogin(email: "john@example.com", password: "password") { result in
-//    switch result {
-//    case .success(let message):
-//        print(message)
-//    case .failure(let error):
-//        print("Login failed: \(error.localizedDescription)")
-//    }
-//}
 

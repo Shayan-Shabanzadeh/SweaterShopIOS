@@ -11,9 +11,12 @@ struct MainView: View {
     init() {
         fetchProductData()
     }
-    
+    @Environment(\.presentationMode) var presentationMode
+
     @StateObject var cartManager = CartManager()
     @State private var selectedProduct: Product? = nil
+    
+    @State private var showMenu = false
     
     var columns = [GridItem(.adaptive(minimum: 160), spacing: 20)]
     
@@ -33,14 +36,43 @@ struct MainView: View {
             }
             .navigationTitle(Text("Sweater shop"))
             .toolbar {
-                NavigationLink(destination: CartView().environmentObject(cartManager)) {
-                    CartButton(numberOfProducts: cartManager.products.count)
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Menu {
+                        Button(action: {
+                            // Handle profile action
+                        }) {
+                            Label("Profile", systemImage: "person")
+                        }
+                        
+                        Button(action: {
+                            // Handle settings action
+                        }) {
+                            Label("Settings", systemImage: "gearshape")
+                        }
+                        
+                        Button(action: {
+                            presentationMode.wrappedValue.dismiss()  // Dismiss the current view (logout)
+                        }) {
+                            Label("Logout", systemImage: "person.crop.circle.badge.xmark")
+                        }
+                    } label: {
+                        Image(systemName: "line.horizontal.3")
+                            .imageScale(.large)
+                            .foregroundColor(.primary)
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: CartView().environmentObject(cartManager)) {
+                        CartButton(numberOfProducts: cartManager.products.count)
+                    }
                 }
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
 }
+
 
 
 struct MainScreen_Previews: PreviewProvider {
