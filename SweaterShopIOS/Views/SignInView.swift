@@ -168,16 +168,28 @@ struct SignInView: View {
             DispatchQueue.main.async {
                 isLoading = false
                 switch result {
-                case .success:
+                case .success(_):
                     navigateToMainView = true
                 case .failure(let error):
                     // Handle login failure and show error message
-                    errorText = "Username or Password is inccorect."
+                    switch error {
+                    case AuthenticationError.invalidResponse:
+                        errorText = "Invalid response received."
+                    case AuthenticationError.requestFailed:
+                        errorText = "Request failed."
+                    case AuthenticationError.invalidData:
+                        errorText = "Invalid data received."
+                    case AuthenticationError.invalidCredentials:
+                        errorText = "Username or password is incorrect."
+                    default:
+                        errorText = "An error occurred during login."
+                    }
                     print("Login error:", error)
                 }
             }
         }
     }
+
     
     private func validatePassword(){
         if password.contains(" "){

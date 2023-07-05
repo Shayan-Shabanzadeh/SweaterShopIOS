@@ -7,12 +7,19 @@
 
 import Foundation
 
-struct User: Identifiable {
+struct User: Identifiable, Decodable {
     var id = UUID()
-    var firstName: String
-    var lastName: String
+    var first_name: String
+    var last_name: String
     var email: String
     var password: String
+    
+    private enum CodingKeys: String, CodingKey {
+        case first_name = "first_name"
+        case last_name = "last_name"
+        case email = "email"
+        case password = "password"
+    }
 }
 
 var current_user : User? = nil
@@ -26,7 +33,7 @@ enum AuthenticationError: Error {
     case userExists
 }
 
-func sendLogin(email: String, password: String, completion: @escaping (Result<String, Error>) -> Void) {
+func sendLogin(email: String, password: String, completion: @escaping (Result<User, Error>) -> Void) {
     let loginURL = URL(string: "http://localhost:9000/login")!
 
     var request = URLRequest(url: loginURL)
@@ -54,7 +61,18 @@ func sendLogin(email: String, password: String, completion: @escaping (Result<St
             }
 
             if httpResponse.statusCode == 200 {
-                completion(.success("Login successful."))
+                print("Response data: \(String(data: data!, encoding: .utf8) ?? "")") // Print the response data
+                do {
+                    if let userData = data {
+                        let user = try JSONDecoder().decode(User.self, from: userData)
+                        current_user = user  // Update current_user with the user object
+                        completion(.success(user))
+                    } else {
+                        completion(.failure(AuthenticationError.invalidData))
+                    }
+                } catch {
+                    completion(.failure(AuthenticationError.invalidData))
+                }
             } else if httpResponse.statusCode == 401 {
                 completion(.failure(AuthenticationError.invalidCredentials))
             } else {
@@ -68,6 +86,8 @@ func sendLogin(email: String, password: String, completion: @escaping (Result<St
     }
 }
 
+
+
 func sendSignup(user: User, completion: @escaping (Result<String, Error>) -> Void) {
     let signupURL = URL(string: "http://localhost:9000/signup")!
 
@@ -78,8 +98,8 @@ func sendSignup(user: User, completion: @escaping (Result<String, Error>) -> Voi
     let signupData: [String: Any] = [
         "email": user.email,
         "password": user.password,
-        "first_name": user.firstName,
-        "last_name": user.lastName
+        "first_name": user.first_name,
+        "last_name": user.last_name
     ]
 
     do {

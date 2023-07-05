@@ -94,7 +94,14 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({"message": "User created successfully."}), 201
+    user_object = {
+        "email": new_user.email,
+        "first_name": new_user.first_name,
+        "last_name": new_user.last_name,
+        "password": "****"
+    }
+
+    return jsonify(user_object), 201
 
 
 @app.route("/login", methods=["POST"])
@@ -110,7 +117,14 @@ def login():
     if not user or user.password != password:
         return jsonify({"error": "Invalid email or password."}), 401
 
-    return jsonify({"message": "Login successful."}), 200
+    user_object = {
+        "email": user.email,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "password": "****"
+    }
+
+    return jsonify(user_object), 200
 
 
 if __name__ == "__main__":

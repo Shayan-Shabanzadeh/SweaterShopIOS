@@ -180,7 +180,7 @@ struct SignupView: View {
         }
         
         // Create a user object
-        var user = User(firstName: firstName, lastName: lastName, email: email, password: password)
+        var user = User(first_name: firstName, last_name: lastName, email: email, password: password)
         sendSignup(user: user) { result in
             DispatchQueue.main.async {
                 isLoading = false
