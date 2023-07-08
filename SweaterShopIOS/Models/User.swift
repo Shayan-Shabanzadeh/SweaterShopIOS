@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct User: Identifiable, Decodable {
+struct User: Identifiable, Decodable , Encodable {
     var id = UUID()
     var first_name: String
     var last_name: String
@@ -32,6 +32,60 @@ enum AuthenticationError: Error {
     case invalidCredentials
     case userExists
 }
+
+func updateUser(user: User, completion: @escaping (Result<User, Error>) -> Void) {
+    let endpoint = "http://localhost:9000/user/\(user.email)"
+    
+    guard let url = URL(string: endpoint) else {
+        completion(.failure(AuthenticationError.invalidData))
+        return
+    }
+    
+    var request = URLRequest(url: url)
+    request.httpMethod = "PUT"
+    request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+    
+    let encoder = JSONEncoder()
+    do {
+        let userData = try encoder.encode(user)
+        request.httpBody = userData
+    } catch {
+        completion(.failure(error))
+        return
+    }
+    
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        if let error = error {
+            completion(.failure(error))
+            return
+        }
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            completion(.failure(AuthenticationError.invalidResponse))
+            return
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            completion(.failure(AuthenticationError.requestFailed))
+            return
+        }
+        
+        guard let data = data else {
+            completion(.failure(AuthenticationError.invalidData))
+            return
+        }
+        
+        let decoder = JSONDecoder()
+        do {
+            let updatedUser = try decoder.decode(User.self, from: data)
+            completion(.success(updatedUser))
+        } catch {
+            completion(.failure(error))
+        }
+    }.resume()
+}
+
+
 
 func sendLogin(email: String, password: String, completion: @escaping (Result<User, Error>) -> Void) {
     let loginURL = URL(string: "http://localhost:9000/login")!

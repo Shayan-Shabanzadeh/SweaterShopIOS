@@ -35,10 +35,11 @@ struct SignInView: View {
                                 .font(.title3)
                                 .padding()
                                 .frame(maxWidth: .infinity)
-                                .background(Color.white)
+                                .background(Color.primary.colorInvert())
                                 .cornerRadius(50.0)
                                 .shadow(color: Color.black.opacity(0.08), radius: 60, x: 0.0, y: 16)
                                 .disableAutocorrection(true)
+                                .foregroundColor(.primary)
                                 .autocapitalization(.none)
                                 .onChange(of: email) { newValue in
                                     errorText = ""
@@ -60,7 +61,7 @@ struct SignInView: View {
                                         .font(.title3)
                                         .padding()
                                         .frame(maxWidth: .infinity)
-                                        .background(Color.white)
+                                        .background(Color.primary.colorInvert())
                                         .cornerRadius(50.0)
                                         .shadow(color: Color.black.opacity(0.08), radius: 60, x: 0.0, y: 16)
                                         .padding(.vertical)
@@ -69,7 +70,7 @@ struct SignInView: View {
                                         .font(.title3)
                                         .padding()
                                         .frame(maxWidth: .infinity)
-                                        .background(Color.white)
+                                        .background(Color.primary.colorInvert())
                                         .cornerRadius(50.0)
                                         .shadow(color: Color.black.opacity(0.08), radius: 10, x: 0.0, y: 4)
                                         .padding(.vertical)
@@ -119,14 +120,14 @@ struct SignInView: View {
                         
                         
                         Text("or login with Google & Apple")
-                            .foregroundColor(Color.black.opacity(0.4))
+                            .foregroundColor(.primary)
                         VStack{
-                            Divider()
+                            Divider().background(.primary)
                             Spacer().frame(height: 16)
                         }
                         
                         VStack{
-                            SocalLoginButton(image: Image(uiImage: #imageLiteral(resourceName: "apple")), text: Text("Sign in with Apple"))
+                            SocalLoginButton(image: Image(uiImage: #imageLiteral(resourceName: "apple")), text: Text("Sign in with Apple").foregroundColor(.black))
                             
                             SocalLoginButton(image: Image(uiImage: #imageLiteral(resourceName: "google")), text: Text("Sign in with Google").foregroundColor(Color("PrimaryColor")))
                                 .padding(.vertical)
@@ -139,7 +140,7 @@ struct SignInView: View {
                     }
                     
                     Spacer()
-                    Divider()
+                    Divider().background(.primary)
                     Spacer()
                     Text("You are completely safe.")
                     Text("Read our Terms & Conditions.")
@@ -250,6 +251,12 @@ struct SocalLoginButton: View {
 struct SignIn_Preview: PreviewProvider {
     static var previews: some View {
         SignInView()
+    }
+}
+
+struct SignIn_Preview_dark: PreviewProvider {
+    static var previews: some View {
+        SignInView().preferredColorScheme(.dark)
     }
 }
 

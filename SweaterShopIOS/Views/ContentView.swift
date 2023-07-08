@@ -9,7 +9,6 @@ struct ContentView: View {
                 VStack {
                     Spacer()
                     Image(uiImage: #imageLiteral(resourceName: "sweathershop"))
-                        .background(Color.clear)
                     
                     //                    Spacer()
                     //                    PrimaryButton(title: "Get Started")

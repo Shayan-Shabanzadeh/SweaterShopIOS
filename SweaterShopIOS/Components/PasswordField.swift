@@ -26,7 +26,7 @@ struct PasswordField: View {
                     .font(.title3)
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.white)
+                    .background(Color.primary.colorInvert())
                     .cornerRadius(50.0)
                     .shadow(color: Color.black.opacity(0.08), radius: 60, x: 0.0, y: 16)
             } else {
@@ -34,7 +34,7 @@ struct PasswordField: View {
                     .font(.title3)
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.white)
+                    .background(Color.primary.colorInvert())
                     .cornerRadius(50.0)
                     .shadow(color: Color.black.opacity(0.08), radius: 60, x: 0.0, y: 16)
             }

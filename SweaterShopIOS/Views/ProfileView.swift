@@ -46,15 +46,15 @@ struct EditProfileView: View {
     @Binding var user: User?
     @State private var firstName: String = ""
     @State private var lastName: String = ""
-    @State private var email: String = ""
     @State private var password: String = "*****"
     @State private var conformPassword: String = "*****"
     @State private var errorText = ""
     @State private var firstNameError = ""
     @State private var lastNameError = ""
-    @State private var emailError = ""
     @State private var passwordError = ""
     @State private var confirmPasswordError = ""
+    @State private var success_text = ""
+    
     
     var body: some View {
         VStack(spacing: 20) {
@@ -95,26 +95,6 @@ struct EditProfileView: View {
                 }
             }
             
-            VStack {
-                TextField("Email address", text: $email)
-                    .font(.title3)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.white)
-                    .cornerRadius(50.0)
-                    .shadow(color: Color.black.opacity(0.08), radius: 60, x: 0.0, y: 16)
-                    .disableAutocorrection(true)
-                    .autocapitalization(.none)
-                    .onChange(of: email) { newValue in
-                        errorText = ""
-                        validateEmail()
-                    }
-                if !emailError.isEmpty {
-                    Text(emailError)
-                        .foregroundColor(.red)
-//                                    .padding(.top, 8)
-                }
-            }
 
             VStack{
                 PasswordField(password: $password, showPassword: false, text : "Password")
@@ -134,7 +114,11 @@ struct EditProfileView: View {
                     Text(confirmPasswordError).foregroundColor(.red)
                 }
             }
-            
+            if !success_text.isEmpty && errorText.isEmpty{
+                Text(success_text).foregroundColor(.green)
+            }else if !errorText.isEmpty{
+                Text(errorText).foregroundColor(.red)
+            }
             Button(action: {
                 saveChanges()
             }) {
@@ -160,7 +144,6 @@ struct EditProfileView: View {
         if let user = user {
             firstName = user.first_name
             lastName = user.last_name
-            email = user.email
         }
     }
     
@@ -170,35 +153,33 @@ struct EditProfileView: View {
         // Example: Update the user object with the new values
         user?.first_name = firstName
         user?.last_name = lastName
-        user?.email = email
+        
+        print("password is \(password)")
+        
+        // Update the password only if it has changed
+        if password != "*****" && conformPassword != "*****"{
+            print("IF STATEMENT")
+            user?.password = password
+        }else{
+            user?.password = user!.password
+        }
+
         
         // Perform API request or database update to save changes
-        
-        // Example: Print updated user details
-        if let updatedUser = user {
-            print("Updated User: \(updatedUser)")
+        updateUser(user: user!) { result in
+            switch result {
+            case .success(let updatedUser):
+                // Update the current_user with the updated user object
+                current_user = updatedUser
+                print("User updated successfully: \(updatedUser)")
+                success_text = "User updated successfully"
+            case .failure(let error):
+                errorText = "Failed to update user"
+                print("Failed to update user: \(error)")
+            }
         }
     }
-    
-    private func validateEmail() {
-        if email.isEmpty {
-            emailError = "Email is required."
-        } else if !isValidEmail(email) {
-            emailError = "Invalid email format."
-        } else {
-            emailError = ""
-        }
-    }
-    
-    private func isValidEmail(_ email: String) -> Bool {
-        // Add your email validation logic here
-        // Return true if email is valid, false otherwise
-        
-        // A simple email validation example
-        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
-        return emailPredicate.evaluate(with: email)
-    }
+
     
     private func validateFirstName() {
         if firstName.isEmpty {
