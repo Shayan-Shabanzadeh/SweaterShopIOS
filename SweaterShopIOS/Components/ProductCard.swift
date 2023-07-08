@@ -16,6 +16,7 @@ struct ProductCard: View {
     var product: Product
     
     var body: some View {
+        
         ZStack(alignment: .topTrailing) {
             ZStack(alignment: .bottom) {
                 if let image = image {

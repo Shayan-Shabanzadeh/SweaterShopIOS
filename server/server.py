@@ -109,6 +109,9 @@ def add_comment(product_id):
     username = data.get("username")
     text = data.get("text")
 
+    print(username)
+    print(text)
+
     if not username or not text:
         return jsonify({"error": "Username and text are required."}), 400
 
@@ -146,13 +149,10 @@ def add_rating(product_id):
     if user_email in product.ratings:
         return jsonify({"error": "User has already rated this product."}), 400
 
-    # product.add_rating(user_email, rating)
-    # product.ratings[user_email] = rating
-    product.ratings = product.ratings + {user_email: rating}
+    product.ratings[user_email] = rating
     product.number_of_ratings = len(product.ratings)
     product.calculate_average_rating()
-    print(product)
-    # db.session.add(product)
+    print(product.ratings)
     db.session.commit()
 
     return jsonify({"message": "Rating added successfully."}), 201

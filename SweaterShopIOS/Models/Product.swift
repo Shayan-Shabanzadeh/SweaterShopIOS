@@ -129,5 +129,37 @@ func addRating(productID: Int, userEmail: String, rating: Double, completion: @e
 }
 
 
+func addComment(productID: Int, username: String, text: String, completion: @escaping (Bool) -> Void) {
+    let urlString = "http://localhost:9000/product/\(productID)/comment"
+    guard let url = URL(string: urlString) else {
+        completion(false)
+        return
+    }
+    
+    let parameters: [String: Any] = [
+        "username": username,
+        "text": text
+    ]
+    
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    
+    do {
+        let jsonData = try JSONSerialization.data(withJSONObject: parameters)
+        request.httpBody = jsonData
+        
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard let _ = data else {
+                completion(false)
+                return
+            }
+            
+            completion(true)
+        }.resume()
+    } catch {
+        completion(false)
+    }
+}
 
 
