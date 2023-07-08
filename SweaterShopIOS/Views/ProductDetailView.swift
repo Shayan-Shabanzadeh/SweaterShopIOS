@@ -1,10 +1,3 @@
-//
-//  ProductDetailView.swift
-//  SweaterShopIOS
-//
-//  Created by Shayan Shabanzadeh on 4/14/1402 AP.
-//
-
 import SwiftUI
 
 struct ProductDetailView: View {
@@ -12,6 +5,9 @@ struct ProductDetailView: View {
     @State private var image: Image?
     @State private var selectedSize: String = "Small"
     @EnvironmentObject var cartManager: CartManager
+    @State private var isRatingSheetPresented = false
+    @State private var userRating: Double = 0.0
+    
     
     var body: some View {
         VStack(spacing: 20) {
@@ -86,7 +82,30 @@ struct ProductDetailView: View {
             Text("Price: $\(product.price)")
                 .font(.headline)
             
-            // Add to Cart Button
+            // Rating
+            let averageRating = product.numberOfRatings > 0 ? product.ratings.values.reduce(0, +) / Double(product.numberOfRatings) : 0
+            HStack(spacing: 4) {
+                Text("Rating:")
+                    .font(.headline)
+                ForEach(0..<5) { index in
+                    Image(systemName: index < Int(averageRating) ? "star.fill" : "star")
+                        .foregroundColor(.yellow)
+                }
+            }
+            .padding(.vertical, 4)
+            
+            // Rate Button
+            Button(action: {
+                isRatingSheetPresented = true
+            }) {
+                Text("Rate Product")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(10)
+            }
+            
             Button(action: {
                 cartManager.addToCart(product: product)
             }) {
@@ -110,8 +129,7 @@ struct ProductDetailView: View {
                     // Handle the case when image retrieval fails
                     print("Failed to fetch product image")
                 }
-            }
-        }
+            }        }
         .padding()
         .navigationTitle(Text(product.name))
         .toolbar {
@@ -119,14 +137,77 @@ struct ProductDetailView: View {
                 CartButton(numberOfProducts: cartManager.products.count)
             }
         }
+        .sheet(isPresented: $isRatingSheetPresented) {
+            RatingSelectionView(
+                userRating: $userRating,
+                submitRating: {
+                    addRating(productID: product.id,userEmail: current_user!.email , rating: userRating) { success in
+                        if success {
+                            print("Rating submitted successfully")
+                        } else {
+                            print("Failed to submit rating")
+                        }
+                    }
+                    isRatingSheetPresented = false
+                },
+                cancelRating: {
+                    isRatingSheetPresented = false
+                }
+            )
+        }
+    }
+}
+
+struct RatingSelectionView: View {
+    @Binding var userRating: Double
+    var submitRating: () -> Void
+    var cancelRating: () -> Void
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Spacer()
+                Button(action: cancelRating) {
+                    Image(systemName: "xmark.circle")
+                        .font(.title)
+                        .foregroundColor(.red)
+                }
+            }
+            .padding()
+            
+            Spacer()
+            
+            Text("Select a rating:")
+                .font(.headline)
+            
+            HStack(spacing: 10) {
+                ForEach(1...5, id: \.self) { rating in
+                    Button(action: {
+                        userRating = Double(rating)
+                    }) {
+                        Image(systemName: rating <= Int(userRating) ? "star.fill" : "star")
+                            .foregroundColor(.yellow)
+                            .font(.system(size: 20))
+                    }
+                }
+            }
+            
+            Spacer()
+            
+            Button(action: submitRating) {
+                Text("Submit")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(10)
+            }
+            .padding(.bottom)
+        }
+        .padding()
     }
 }
 
 
 
 
-//struct ProductDetailView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ProductDetailView(product: Product(id: 0, image: "localhost:9000/product/image?productName=Cream%20sweater", price: 56, description: "Test", name: "Cream sweater", type: "sweater"))
-//    }
-//}

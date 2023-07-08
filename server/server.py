@@ -17,7 +17,7 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     image = db.Column(db.String(100))
-    price = db.Column(db.Float)
+    price = db.Column(db.Integer)
     description = db.Column(db.String(200))
     type = db.Column(db.String(50))
     comments = db.relationship('Comment', backref='product', lazy=True)
@@ -33,8 +33,11 @@ class Product(db.Model):
         self.ratings = ratings or {}  # Initialize with an empty dictionary if ratings is not provided
         self.number_of_ratings = len(self.ratings)
 
-    def add_rating(self, user_id, rating):
-        self.ratings[str(user_id)] = rating
+    def add_rating(self, username, rating):
+        print(username)
+        print(rating)
+        self.ratings[username] = rating
+        print(self.ratings)
         self.number_of_ratings = len(self.ratings)
         self.calculate_average_rating()
 
@@ -69,6 +72,16 @@ class User(db.Model):
         self.last_name = last_name
 
 
+@app.route("/product/<int:product_id>/comment", methods=["GET"])
+def get_product_comments(product_id):
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({"error": "Product not found."}), 404
+
+    comments = [{"id": comment.id, "username": comment.username, "text": comment.text} for comment in product.comments]
+    return jsonify(comments)
+
+
 @app.route("/products", methods=["GET"])
 def get_products():
     products = Product.query.all()
@@ -81,7 +94,9 @@ def get_products():
             "image": product.image,
             "price": product.price,
             "description": product.description,
-            "type": product.type
+            "type": product.type,
+            "ratings": product.ratings,
+            "number_of_ratings": product.number_of_ratings
         }
         product_list.append(product_dict)
 
@@ -111,11 +126,11 @@ def add_comment(product_id):
 @app.route("/product/<int:product_id>/rating", methods=["POST"])
 def add_rating(product_id):
     data = request.json
-    user_id = data.get("user_id")
+    user_email = data.get("user_email")
     rating = data.get("rating")
 
-    if not user_id or not rating:
-        return jsonify({"error": "User ID and rating are required."}), 400
+    if not user_email or not rating:
+        return jsonify({"error": "User email and rating are required."}), 400
 
     try:
         rating = float(rating)
@@ -128,10 +143,16 @@ def add_rating(product_id):
     if not product:
         return jsonify({"error": "Product not found."}), 404
 
-    if user_id in product.ratings:
+    if user_email in product.ratings:
         return jsonify({"error": "User has already rated this product."}), 400
 
-    product.add_rating(user_id, rating)
+    # product.add_rating(user_email, rating)
+    # product.ratings[user_email] = rating
+    product.ratings = product.ratings + {user_email: rating}
+    product.number_of_ratings = len(product.ratings)
+    product.calculate_average_rating()
+    print(product)
+    # db.session.add(product)
     db.session.commit()
 
     return jsonify({"message": "Rating added successfully."}), 201
@@ -173,11 +194,10 @@ def update_user(email):
         "email": user.email,
         "first_name": user.first_name,
         "last_name": user.last_name,
-        "password" : user.password
+        "password": user.password
     }
 
     return jsonify(user_object), 200
-
 
 
 @app.route("/signup", methods=["POST"])
