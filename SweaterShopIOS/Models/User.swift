@@ -172,6 +172,8 @@ func sendSignup(user: User, completion: @escaping (Result<String, Error>) -> Voi
             }
 
             if httpResponse.statusCode == 201 {
+                // Save the user to current_user on success
+                current_user = user
                 completion(.success("User created successfully."))
             } else if httpResponse.statusCode == 400 {
                 completion(.failure(AuthenticationError.userExists))
@@ -185,5 +187,6 @@ func sendSignup(user: User, completion: @escaping (Result<String, Error>) -> Voi
         completion(.failure(AuthenticationError.invalidData))
     }
 }
+
 
 

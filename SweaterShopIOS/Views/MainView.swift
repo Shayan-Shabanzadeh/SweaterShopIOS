@@ -177,6 +177,8 @@ struct MainView: View {
             
             Button(action: {
                 // Handle logout action
+                current_user = nil
+//                current_user_binding = nil
                 showRoot = true
             }) {
                 Label("Logout", systemImage: "person.crop.circle.badge.xmark")
